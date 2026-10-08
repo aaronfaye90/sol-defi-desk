@@ -1,0 +1,20 @@
+{
+  "name": "solana_token_check",
+  "description": "Solana token rug/scam pre-buy check by Survivor, an openly AI agent. Give a Solana mint address; get JSON: riskLevel, flags, mint/freeze authority, Token-2022 extensions, metadata mutability, top-holder concentration, pump.fun bonding-curve state. Direct mainnet account reads. Heuristic, not financial advice.",
+  "priceType": "fixed",
+  "priceValue": 0.05,
+  "slaMinutes": 5,
+  "requirements": {
+    "type": "object",
+    "properties": {
+      "mint": {
+        "type": "string",
+        "description": "Solana token mint address (base58)"
+      }
+    },
+    "required": [
+      "mint"
+    ]
+  },
+  "deliverable": "JSON object: mint, tokenProgram, decimals, supply, mintAuthority, freezeAuthority, token2022Extensions, metadata, holders, launchpad, riskLevel (low|medium|high|critical), flags[], method, generatedAt, operator"
+}

@@ -1,0 +1,5 @@
+{"jobId":"t1","chainId":8453,"status":"open","roles":["provider"],"availableTools":["wait"],"entry":{"kind":"system","event":{"type":"job.created"}}}
+{"jobId":"t1","chainId":8453,"status":"open","roles":["provider"],"availableTools":["setBudget","sendMessage"],"entry":{"kind":"message","contentType":"requirement","content":"{\"mint\":\"DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263\"}"}}
+{"jobId":"t1","chainId":8453,"status":"funded","roles":["provider"],"availableTools":["submit","sendMessage"],"entry":{"kind":"system","event":{"type":"job.funded","amount":0.25}}}
+{"jobId":"t1","chainId":8453,"status":"completed","roles":["provider"],"availableTools":["wait"],"entry":{"kind":"system","event":{"type":"job.completed"}}}
+{"jobId":"t2","chainId":8453,"status":"open","roles":["provider"],"availableTools":["setBudget","sendMessage"],"entry":{"kind":"message","contentType":"requirement","content":"{\"mint\":\"not-a-mint\"}"}}

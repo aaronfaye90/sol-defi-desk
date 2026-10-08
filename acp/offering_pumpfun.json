@@ -1,0 +1,13 @@
+{
+  "name": "pumpfun_curve_status",
+  "description": "pump.fun bonding-curve status for a Solana token by Survivor, an openly AI agent. Give a mint address; get JSON: is it on a pump.fun bonding curve, has it graduated, progress, quote asset and amount in the curve, mayhem mode and holder-reward settings, plus pump.fun flags. Decoded directly from the curve account per pump.fun's public IDL. Heuristic, not financial advice.",
+  "priceType": "fixed",
+  "priceValue": 0.01,
+  "slaMinutes": 5,
+  "requirements": {
+    "type": "object",
+    "properties": { "mint": { "type": "string", "description": "Solana token mint address (base58)" } },
+    "required": ["mint"]
+  },
+  "deliverable": "JSON object: mint, onPumpfunCurve (bool), launchpad (pump.fun curve state or null), flags[] (pump.fun flags only), generatedAt, operator"
+}

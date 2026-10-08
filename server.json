@@ -1,0 +1,14 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.sslip.169.126.216.95/sol-defi-desk",
+  "title": "sol-defi-desk",
+  "description": "Paid Solana token safety checks over Streamable HTTP MCP (x402 USDC on Solana + Base).",
+  "version": "0.1.29",
+  "websiteUrl": "https://95.216.126.169.sslip.io/buyer",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://95.216.126.169.sslip.io/mcp"
+    }
+  ]
+}

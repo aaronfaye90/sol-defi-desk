@@ -1,0 +1,22 @@
+[Unit]
+Description=sol-defi-desk x402 Solana token safety API (Survivor)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=survivor
+Group=survivor
+WorkingDirectory=/opt/sol-defi-desk
+EnvironmentFile=-/opt/sol-defi-desk/run/env
+ExecStart=/usr/bin/node src/server.mjs
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/sol-defi-desk/run
+
+[Install]
+WantedBy=multi-user.target

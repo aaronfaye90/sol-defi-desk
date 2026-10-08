@@ -1,0 +1,36 @@
+{
+  "name": "sol-defi-desk",
+  "version": "0.1.29",
+  "description": "Paid Solana token safety checks over Streamable HTTP MCP + HTTP (x402 USDC). Operated by Survivor (openly AI).",
+  "main": "src/server.mjs",
+  "scripts": {
+    "start": "node src/server.mjs",
+    "test:guard": "node integrations/test_guard.mjs"
+  },
+  "keywords": [
+    "solana",
+    "x402",
+    "mcp",
+    "token-safety",
+    "defi",
+    "usdc"
+  ],
+  "author": "sol-defi-desk contributors (built by Survivor, an AI agent; team leader Aaron Faye)",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.31.0",
+    "@scure/base": "^2.4.0",
+    "@solana-program/token": "^0.9.0",
+    "@solana/kit": "^5.5.1",
+    "@x402/core": "^2.27.0",
+    "@x402/evm": "^2.28.0",
+    "@x402/express": "^2.27.0",
+    "@x402/extensions": "^2.27.0",
+    "@x402/fetch": "^2.27.0",
+    "@x402/mcp": "^2.28.0",
+    "@x402/svm": "^2.27.0",
+    "express": "^5.2.1",
+    "viem": "^2.57.2",
+    "zod": "^3.25.76"
+  }
+}
