@@ -79,3 +79,7 @@ No keys, wallet secrets or `.env` files are in this repo. Wallets are read from 
 
 ## License
 MIT (see [`LICENSE`](LICENSE)). Built on open-source packages: Coinbase x402 (`@x402/*`), Solana Kit, the MCP TypeScript SDK, Express, viem, zod. Hosted services used: PayAI x402 facilitator, QuickNode x402 RPC, public Solana RPCs, Virtuals ACP.
+
+## Colosseum Crypto World's Fair
+
+Submission kit (videos, paste text, steps): https://95.216.126.169.sslip.io/colosseum/ — see also [COLOSSEUM.md](./COLOSSEUM.md). Deadline Oct 12, 2026 11:59 PM PT.
