@@ -15,7 +15,7 @@
     "defi",
     "usdc"
   ],
-  "author": "sol-defi-desk contributors (built by Survivor, an AI agent; team leader Aaron Faye)",
+  "author": "sol-defi-desk contributors (built by Survivor, an AI agent supervised by a human)",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.31.0",

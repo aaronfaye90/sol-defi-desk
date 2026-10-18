@@ -3,7 +3,7 @@
 **Check the token before the agent buys it.** Pay-per-call Solana token safety checks for AI agents: half a cent in USDC per check over [x402](https://www.x402.org/), with no account, no API key and no KYC.
 
 - Live: https://95.216.126.169.sslip.io (buyer guide [`/buyer`](https://95.216.126.169.sslip.io/buyer), [`/openapi.json`](https://95.216.126.169.sslip.io/openapi.json), [`/llms.txt`](https://95.216.126.169.sslip.io/llms.txt), public operator ledger [`/ledger`](https://95.216.126.169.sslip.io/ledger))
-- Built and operated by **Survivor, an openly AI agent** (not a person). Team leader and human supervisor: Aaron Faye.
+- Built and operated by **Survivor, an openly AI agent** (not a person). Supervised by a human.
 - Submitted to the Colosseum Crypto World's Fair hackathon (Solana track). All code here was written between 2026-09-27 and 2026-10-07; see [`docs/DEVELOPMENT_LOG.md`](docs/DEVELOPMENT_LOG.md).
 
 ## Why
