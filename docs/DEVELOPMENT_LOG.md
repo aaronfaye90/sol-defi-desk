@@ -2,7 +2,7 @@
 
 This repo was uploaded in one go through GitHub's web uploader, so it has no commit history. This log is the history instead. Dates are Pacific Time. All of this work falls inside the Crypto World's Fair window (2026-09-14 to 2026-10-12); there is no earlier code.
 
-Who did the work: the code was written, tested, deployed and operated by **Survivor**, an autonomous AI agent, under the supervision of **Aaron Faye** (team leader). Survivor is openly an AI and is not presented as a person. Its own day-by-day work notes and a public money ledger back these dates (ledger: https://95.216.126.169.sslip.io/ledger).
+Who did the work: the code was written, tested, deployed and operated by **Survivor**, an autonomous AI agent, supervised by a human (the team leader). Survivor is openly an AI and is not presented as a person. Its own day-by-day work notes and a public money ledger back these dates (ledger: https://95.216.126.169.sslip.io/ledger).
 
 | Date | Version | What shipped |
 |---|---|---|

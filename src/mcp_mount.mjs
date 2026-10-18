@@ -5,6 +5,7 @@ import { createPaymentWrapper } from "@x402/mcp";
 import { declareDiscoveryExtension } from "@x402/extensions/bazaar";
 import { z } from "zod";
 import { tokenCheck, isValidMint, KNOWN_ISSUER_ASSETS } from "./tokencheck.mjs";
+import { baseTokenCheck, isValidEvmAddress, KNOWN_BASE_ISSUERS } from "./basetokencheck.mjs";
 import { existsSync, readFileSync } from "node:fs";
 import { join as pathJoin } from "node:path";
 
@@ -38,12 +39,14 @@ export function buildMcpServer(ctx) {
   const {
     paidSingle,
     paidBatch,
+    paidBase,
     network,
     payTo,
     baseNetwork,
     basePayTo,
     price,
     priceBatch,
+    priceBase,
     batchMax,
     dataRpc,
     publicBase,
@@ -56,7 +59,7 @@ export function buildMcpServer(ctx) {
       title: "sol-defi-desk",
       version: "0.1.29",
       description:
-        "Paid Solana token safety checks over Streamable HTTP MCP + HTTP (x402 USDC on Solana + Base). Free tools: mint_preflight, describe_paid_api. Paid: token_check $0.005, token_check_batch $0.01. Same origin also hosts a $3 USDC Solana Pay print shop (/shop/) and sponsor tip path (/sponsor). Operated by Survivor, an autonomous AI agent (not a human).",
+        "Paid Solana + Base token safety checks over Streamable HTTP MCP + HTTP (x402 USDC on Solana + Base). Free tools: mint_preflight, describe_paid_api. Paid: token_check $0.005, token_check_batch $0.01, base_token_check $0.01. Same origin also hosts a $3 USDC Solana Pay print shop (/shop/) and sponsor tip path (/sponsor). Operated by Survivor, an autonomous AI agent (not a human).",
       websiteUrl: `${publicBase}/buyer`,
     },
     { capabilities: { tools: {} } },
@@ -109,10 +112,12 @@ export function buildMcpServer(ctx) {
         paidTools: [
           { name: "token_check", price, args: ["mint"] },
           { name: "token_check_batch", price: priceBatch, args: ["mints"], maxMints: batchMax },
+          ...(priceBase && paidBase ? [{ name: "base_token_check", price: priceBase, args: ["token"] }] : []),
         ],
         http: {
           single: `${publicBase}/v1/token-check?mint=<mint>`,
           batch: `${publicBase}/v1/token-check/batch?mints=<m1,m2,…>`,
+          baseTokenCheck: `${publicBase}/v1/base-token-check?token=<0x…>`,
           examples: `${publicBase}/v1/examples/token-check`,
           buyer: `${publicBase}/buyer`,
         },
@@ -224,6 +229,41 @@ export function buildMcpServer(ctx) {
     }),
   );
 
+
+  if (priceBase && paidBase) {
+    mcpServer.tool(
+      "base_token_check",
+      `Paid (${priceBase} USDC via x402): Base ERC-20 rug/honeypot-risk pre-check from direct on-chain reads (owner/renounced, proxy, privileged functions, owner %, Uniswap v2/v3 + Aerodrome liquidity, LP burned %, riskLevel). No sell simulation. Failed lookups are not settled. Also free on this origin: /shop/ /sponsor /ledger.`,
+      { token: z.string().describe("Base ERC-20 token contract address (0x…)") },
+      paidBase(async ({ token }) => {
+        if (!isValidEvmAddress(token)) {
+          return jsonText({ ok: false, error: "invalid_token", hint: "pass token=0x…40 hex chars" });
+        }
+        try {
+          const key = "base:" + token.toLowerCase();
+          const hit = cache.get(key);
+          let r;
+          if (hit && Date.now() - hit.t < 60000) r = hit.r;
+          else {
+            r = await baseTokenCheck(token);
+            if (r.ok) cache.set(key, { t: Date.now(), r });
+            if (cache.size > 5000) cache.clear();
+          }
+          if (!r.ok) {
+            return jsonText({ ok: false, status: r.status, ...(r.body || r) });
+          }
+          return jsonText({ ok: true, ...r.body });
+        } catch (e) {
+          return jsonText({
+            ok: false,
+            error: "upstream_rpc_unavailable",
+            detail: String(e.message || e).slice(0, 200),
+          });
+        }
+      }),
+    );
+  }
+
   return mcpServer;
 }
 
@@ -232,7 +272,7 @@ export function buildMcpServer(ctx) {
  * Also serves GET /mcp/server-card and /.well-known/mcp/catalog.json.
  */
 export async function mountMcp(app, ctx) {
-  const { publicBase, resourceServer, network, payTo, baseNetwork, basePayTo, price, priceBatch } = ctx;
+  const { publicBase, resourceServer, network, payTo, baseNetwork, basePayTo, price, priceBatch, priceBase } = ctx;
 
   if (typeof resourceServer.initialize === "function") {
     await resourceServer.initialize();
@@ -311,7 +351,47 @@ export async function mountMcp(app, ctx) {
       output: { example: { count: 2, okCount: 2, price: "$0.01" } },
     }),
   });
-  const buildCtx = { ...ctx, paidSingle, paidBatch };
+  let paidBase = null;
+  if (priceBase) {
+    const acceptsBase = await resourceServer.buildPaymentRequirements({
+      scheme: "exact",
+      network,
+      payTo,
+      price: priceBase,
+    });
+    if (baseNetwork && basePayTo) {
+      const baseReqs = await resourceServer.buildPaymentRequirements({
+        scheme: "exact",
+        network: baseNetwork,
+        payTo: basePayTo,
+        price: priceBase,
+      });
+      acceptsBase.push(...baseReqs);
+    }
+    paidBase = createPaymentWrapper(resourceServer, {
+      accepts: acceptsBase,
+      resource: {
+        url: `${publicBase}/mcp#base_token_check`,
+        description: "Base ERC-20 rug/honeypot-risk pre-check MCP tool (x402 USDC). Operated by Survivor (openly AI).",
+        mimeType: "application/json",
+        serviceName: "sol-defi-desk-mcp-base-token-check",
+        tags: ["Base", "ERC-20", "token-safety", "x402", "MCP", "AI-agent"],
+      },
+      extensions: declareDiscoveryExtension({
+        toolName: "base_token_check",
+        description: "Base ERC-20 rug/honeypot-risk pre-check from direct on-chain reads. $0.01 USDC via x402. Also free on this origin: /shop/ /sponsor /ledger.",
+        transport: "streamable-http",
+        inputSchema: {
+          type: "object",
+          properties: { token: { type: "string", description: "Base ERC-20 token contract address (0x…)" } },
+          required: ["token"],
+        },
+        example: { token: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" },
+        output: { example: { token: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", riskLevel: "low", chain: "base" } },
+      }),
+    });
+  }
+  const buildCtx = { ...ctx, paidSingle, paidBatch, paidBase };
 
   const serverCard = {
     $schema: "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
@@ -319,7 +399,7 @@ export async function mountMcp(app, ctx) {
     title: "sol-defi-desk",
     version: "0.1.29",
     description:
-      "Solana token safety checks over HTTP x402 + MCP (USDC on Solana + Base). Same origin: $3 USDC Solana Pay print shop (/shop/) + sponsor tips (/sponsor) + public ledger (/ledger). Operated by Survivor, an autonomous AI agent (not a human).",
+      "Solana + Base token safety checks over HTTP x402 + MCP (USDC on Solana + Base). Same origin: $3 USDC Solana Pay print shop (/shop/) + sponsor tips (/sponsor) + public ledger (/ledger). Operated by Survivor, an autonomous AI agent (not a human).",
     websiteUrl: `${publicBase}/buyer`,
     remotes: [
       {
